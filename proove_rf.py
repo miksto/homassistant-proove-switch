@@ -10,6 +10,8 @@ from homeassistant.const import (
     CONF_NAME, CONF_SWITCHES, EVENT_HOMEASSISTANT_STOP)
 import homeassistant.helpers.config_validation as cv
 
+REQUIREMENTS = ['pigpio']
+
 _LOGGER = logging.getLogger(__name__)
 
 CONF_GPIO = 'gpio'
@@ -29,7 +31,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 # pylint: disable=unused-argument, import-error
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Find and return switches controlled by a generic RF device via GPIO."""
-    import proove_433_transmitter
+    from custom_components.switch import proove_433_transmitter
     import pigpio
 
     gpio = config.get(CONF_GPIO)
@@ -39,6 +41,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     devices = []
     for dev_name, properties in switches.items():
+        _LOGGER.info("Adding proove device: %s", dev_name)
         devices.append(
             ProoveSwitch(
                 hass = hass,
@@ -99,12 +102,12 @@ class ProoveSwitch(SwitchDevice):
 
     def turn_on(self):
         """Turn the switch on."""
-        if self._send_code(self._code_on):
+        if self._send_code(self._code_on()):
             self._state = True
             self.schedule_update_ha_state()
 
     def turn_off(self):
         """Turn the switch off."""
-        if self._send_code(self._code_off):
+        if self._send_code(self._code_off()):
             self._state = False
             self.schedule_update_ha_state()
