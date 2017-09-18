@@ -19,7 +19,8 @@ CONF_UNIT_CODE = 'unit_code'
 CONF_TRANSMITTER_CODE = 'transmitter_code'
 
 SWITCH_SCHEMA = vol.Schema({
-    vol.Required(CONF_UNIT_CODE): cv.string
+    vol.Required(CONF_UNIT_CODE): cv.string,
+    vol.Optional(CONF_NAME): cv.string
 })
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
